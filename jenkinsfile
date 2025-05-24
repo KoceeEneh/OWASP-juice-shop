@@ -14,8 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', 
-                git 'https://github.com/KoceeEneh/OWASP-juice-shop.git'
+                git branch: 'main', url: 'https://github.com/KoceeEneh/OWASP-juice-shop.git'
             }
         }
 
@@ -59,7 +58,7 @@ pipeline {
                     -H "Authorization: Token $DEFECTDOJO_API_KEY" \
                     -F 'scan_type=Secret Scan' \
                     -F 'file=@gitleaks-report.json' \
-                    -F 'engagement=ENGAGEMENT_ID' \
+                    -F 'engagement=$ENGAGEMENT_ID' \
                     -F 'minimum_severity=Low' \
                     -F 'active=true' \
                     -F 'verified=true'
@@ -68,7 +67,7 @@ pipeline {
                     -H "Authorization: Token $DEFECTDOJO_API_KEY" \
                     -F 'scan_type=Dependency Scan' \
                     -F 'file=@njsscan-report.json' \
-                    -F 'engagement=ENGAGEMENT_ID' \
+                    -F 'engagement=$ENGAGEMENT_ID' \
                     -F 'minimum_severity=Low' \
                     -F 'active=true' \
                     -F 'verified=true'
