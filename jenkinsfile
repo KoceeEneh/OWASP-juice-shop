@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+
+    triggers {
+       githubPush()     
+    }
+
+    environment {
+        DEFECTDOJO_API_KEY = credentials('defectdojo-api-key') // stored securely in Jenkins
+        DEFECTDOJO_URL = 'https://defectdojo.example.com/api/v2/'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/KoceeEneh/OWASP-juice-shop.git'
+            }
+        }
+
+        stage('Run Gitleaks') {
+            steps {
+                sh '''
+                    docker run --rm -v $(pwd):/path zricethezav/gitleaks detect --source=/path --report-format=json --report-path=gitleaks-report.json
+                '''
+            }
+        }
+
+        stage('Run Semgrep') {
+            steps {
+                sh '''
+                    docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep --config=auto --json --output=semgrep-report.json
+                '''
+            }
+        }
+
+        stage('Run NJSSCAN') {
+            steps {
+                sh '''
+                    docker run --rm -v $(pwd):/app opensecurity/njsscan --json --output njsscan-report.json /app
+                '''
+            }
+        }
+
+        stage('Upload Reports to DefectDojo') {
+            steps {
+                sh '''
+                    curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+                    -H "Authorization: Token $DEFECTDOJO_API_KEY" \
+                    -F 'scan_type=Semgrep Scan' \
+                    -F 'file=@semgrep-report.json' \
+                    -F 'engagement=YOUR_ENGAGEMENT_ID' \
+                    -F 'minimum_severity=Low' \
+                    -F 'active=true' \
+                    -F 'verified=true'
+
+                    curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+                    -H "Authorization: Token $DEFECTDOJO_API_KEY" \
+                    -F 'scan_type=Secret Scan' \
+                    -F 'file=@gitleaks-report.json' \
+                    -F 'engagement=YOUR_ENGAGEMENT_ID' \
+                    -F 'minimum_severity=Low' \
+                    -F 'active=true' \
+                    -F 'verified=true'
+
+                    curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+                    -H "Authorization: Token $DEFECTDOJO_API_KEY" \
+                    -F 'scan_type=Dependency Scan' \
+                    -F 'file=@njsscan-report.json' \
+                    -F 'engagement=YOUR_ENGAGEMENT_ID' \
+                    -F 'minimum_severity=Low' \
+                    -F 'active=true' \
+                    -F 'verified=true'
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '*.json', allowEmptyArchive: true
+        }
+    }
+}
