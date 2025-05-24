@@ -7,13 +7,14 @@ pipeline {
 
     environment {
         DEFECTDOJO_API_KEY = credentials('defectdojo-api-key')
-        DEFECTDOJO_URL = 'https://defectdojo.example.com/api/v2/'
+        DEFECTDOJO_URL = 'https://localhost:8081/api/v2/'
         ENGAGEMENT_ID = '1'
     }
 
     stages {
         stage('Checkout') {
             steps {
+                git branch: 'main', 
                 git 'https://github.com/KoceeEneh/OWASP-juice-shop.git'
             }
         }
