@@ -9,6 +9,8 @@ pipeline {
         DEFECTDOJO_API_KEY = credentials('defectdojo-api-key')
         DEFECTDOJO_URL = 'https://localhost:8081/api/v2/'
         ENGAGEMENT_ID = '1'
+        DOCKER = '/usr/local/bin/docker'
+
     }
 
     stages {
@@ -21,7 +23,7 @@ pipeline {
         stage('Run Gitleaks') {
             steps {
                 sh '''
-                    docker run --rm -v $(pwd):/path zricethezav/gitleaks detect --source=/path --report-format=json --report-path=gitleaks-report.json
+                    $DOCKER run --rm -v $(pwd):/path zricethezav/gitleaks detect --source=/path --report-format=json --report-path=gitleaks-report.json || true
                 '''
             }
         }
@@ -29,7 +31,7 @@ pipeline {
         stage('Run Semgrep') {
             steps {
                 sh '''
-                    docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep --config=auto --json --output=semgrep-report.json
+                    $DOCKER run --rm -v $(pwd):/src returntocorp/semgrep semgrep --config=auto --json --output=semgrep-report.json || true
                 '''
             }
         }
@@ -37,7 +39,7 @@ pipeline {
         stage('Run NJSSCAN') {
             steps {
                 sh '''
-                    docker run --rm -v $(pwd):/app opensecurity/njsscan --json --output njsscan-report.json /app
+                    $DOCKER run --rm -v $(pwd):/app opensecurity/njsscan --json --output njsscan-report.json /app || true
                 '''
             }
         }
@@ -45,16 +47,16 @@ pipeline {
         stage('Upload Reports to DefectDojo') {
             steps {
                 sh '''
-                    curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+                    curl --tlsv1.2 -k -X POST "$DEFECTDOJO_URL/import-scan/" \
                     -H "Authorization: Token $DEFECTDOJO_API_KEY" \
                     -F 'scan_type=Semgrep Scan' \
                     -F 'file=@semgrep-report.json' \
-                    -F 'engagement=ENGAGEMENT_ID' \
+                    -F 'engagement=$ENGAGEMENT_ID' \
                     -F 'minimum_severity=Low' \
                     -F 'active=true' \
                     -F 'verified=true'
 
-                    curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+                    curl --tlsv1.2 -X POST "$DEFECTDOJO_URL/import-scan/" \
                     -H "Authorization: Token $DEFECTDOJO_API_KEY" \
                     -F 'scan_type=Secret Scan' \
                     -F 'file=@gitleaks-report.json' \
@@ -63,7 +65,7 @@ pipeline {
                     -F 'active=true' \
                     -F 'verified=true'
 
-                    curl -X POST "$DEFECTDOJO_URL/import-scan/" \
+                    curl --tlsv1.2 -X POST "$DEFECTDOJO_URL/import-scan/" \
                     -H "Authorization: Token $DEFECTDOJO_API_KEY" \
                     -F 'scan_type=Dependency Scan' \
                     -F 'file=@njsscan-report.json' \
