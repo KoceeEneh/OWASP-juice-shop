@@ -18,9 +18,9 @@ This project builds a Jenkins-based CI pipeline to analyze the OWASP Juice Shop 
 This repository consists of the OWASP juice shop and also the jenkinsfile needed for this project. 
 
 2. Jenkinsfile with all scan stages :
-   
- https://github.com/KoceeEneh/OWASP-juice-shop/blob/c5d2de67e2c7a655e6784856e1eed57517319852/jenkinsfile#L1
- 
+
+](https://github.com/KoceeEneh/OWASP-juice-shop/blob/224843ee36f068173c4b59f549e1c0600a7cdaab/jenkinsfile) 
+
 3. Sample JSON/SARIF reports from each tool :
    
 
