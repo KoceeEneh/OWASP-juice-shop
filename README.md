@@ -17,16 +17,18 @@ This project builds a Jenkins-based CI pipeline to analyze the OWASP Juice Shop 
 
 This repository consists of the OWASP juice shop and also the jenkinsfile needed for this project. 
 
-2. Jenkinsfile with all scan stages : 
-
+2. Jenkinsfile with all scan stages :
+   
+ https://github.com/KoceeEneh/OWASP-juice-shop/blob/c5d2de67e2c7a655e6784856e1eed57517319852/jenkinsfile#L1
+ 
 3. Sample JSON/SARIF reports from each tool :
    
- `https://github.com/KoceeEneh/OWASP-juice-shop/blob/c5d2de67e2c7a655e6784856e1eed57517319852/jenkinsfile#L1`
+
  
-5. Script to upload to DefectDojo :
+4. Script to upload to DefectDojo :
    
    The script was automated in the jenkinsfile 
-6. Screenshots of Jenkins pipeline stages:
+5. Screenshots of Jenkins pipeline stages:
 
 <img width="1440" alt="Screenshot 2025-05-25 at 23 40 23" src="https://github.com/user-attachments/assets/b7ab135d-89f6-4892-bb50-00afa913f6aa" />
 
