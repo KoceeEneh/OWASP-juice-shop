@@ -19,8 +19,8 @@ This repository consists of the OWASP juice shop and also the jenkinsfile needed
 
 2. Jenkinsfile with all scan stages :
 
-https://github.com/KoceeEneh/OWASP-juice-shop/blob/7db567d437b146dce4f0d7954f1799177f25e4c4/jenkinsfile
-
+[https://github.com/KoceeEneh/OWASP-juice-shop/blob/7db567d437b146dce4f0d7954f1799177f25e4c4/jenkinsfile
+](https://github.com/KoceeEneh/OWASP-juice-shop/blob/7db567d437b146dce4f0d7954f1799177f25e4c4/jenkinsfile#L1)
 3. Sample JSON/SARIF reports from each tool :
    
 
